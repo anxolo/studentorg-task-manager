@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Engadir Tarefa - Xestor de Tarefas{% endblock %}
+
+{% block content %}
+    <h2>Engadir Nova Tarefa</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST" action="{{ url_for('main.add_task') }}" enctype="application/x-www-form-urlencoded">
+        <div class="mb-3">
+            <label for="descricion" class="form-label">Descrición da Tarefa:</label>
+            <textarea id="descricion" name="descricion" class="form-control" rows="3" required></textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label for="responsable" class="form-label">Responsable:</label>
+            <input type="text" id="responsable" name="responsable" class="form-control" required>
+            {% if top_responsables %}
+                <div class="mt-2">
+                    <small class="text-muted">Suxerencias:</small>
+                    <div class="btn-group btn-group-sm" role="group">
+                        {% for resp in top_responsables %}
+                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('responsable').value='{{ resp.responsable }}'">{{ resp.responsable }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="comision" class="form-label">Comisión, Grupo de Traballo ou Cargo:</label>
+            <input type="text" id="comision" name="comision" class="form-control">
+            {% if top_comisiones %}
+                <div class="mt-2">
+                    <small class="text-muted">Suxerencias:</small>
+                    <div class="btn-group btn-group-sm" role="group">
+                        {% for com in top_comisiones %}
+                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('comision').value='{{ com.comision }}'">{{ com.comision }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            <label for="data_entrega" class="form-label">Data Límite:</label>
+            <input type="date" id="data_entrega" name="data_entrega" class="form-control">
+        </div>
+        
+        <div class="mb-3">
+            <label for="estado" class="form-label">Estado:</label>
+            <select id="estado" name="estado" class="form-select">
+                <option value="Pendente" selected>Pendente</option>
+                <option value="En Progreso">En Progreso</option>
+                <option value="Feito">Feito</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Engadir Tarefa</button>
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+{% endblock %}

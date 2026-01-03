@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Páxina Principal - Xestor de Tarefas{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Listaxe de Tarefas Abertas</h2>
+        <a href="{{ url_for('main.add_task') }}" class="btn btn-primary">Engadir Tarefa</a>
+    </div>
+
+    {% if open_tasks %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Descrición</th>
+                        <th>Responsable</th>
+                        <th>Comisión</th>
+                        <th>Data Límite</th>
+                        <th>Estado</th>
+                        <th>Accións</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in open_tasks %}
+                        <tr>
+                            <td>{{ task.descricion }}</td>
+                            <td>{{ task.responsable }}</td>
+                            <td>{{ task.comision }}</td>
+                            <td>{{ task.data_entrega.strftime('%Y-%m-%d') if task.data_entrega else 'N/A' }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('main.update_task_status', task_id=task.id) }}" class="d-inline">
+                                    <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <option value="Pendente" {% if task.estado == 'Pendente' %}selected{% endif %}>Pendente</option>
+                                        <option value="En Progreso" {% if task.estado == 'En Progreso' %}selected{% endif %}>En Progreso</option>
+                                        <option value="Feito" {% if task.estado == 'Feito' %}selected{% endif %}>Feito</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="btn btn-sm btn-warning me-1">Editar</a>
+                                <form method="POST" action="{{ url_for('main.delete_task', task_id=task.id) }}" class="d-inline" onsubmit="return confirm('Seguro que queres eliminar esta tarefa?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-3" role="alert">
+            Non hai tarefas. Podes engadir unha nova!
+        </div>
+    {% endif %}
+
+    <div class="accordion mt-4" id="doneTasksAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                    Tarefas Feitas ({{ done_tasks|length }})
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#doneTasksAccordion">
+                <div class="accordion-body">
+                    {% if done_tasks %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th>Descrición</th>
+                                        <th>Responsable</th>
+                                        <th>Comisión</th>
+                                        <th>Data Límite</th>
+                                        <th>Accións</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for task in done_tasks %}
+                                        <tr>
+                                            <td>{{ task.descricion }}</td>
+                                            <td>{{ task.responsable }}</td>
+                                            <td>{{ task.comision }}</td>
+                                            <td>{{ task.data_entrega.strftime('%Y-%m-%d') if task.data_entrega else 'N/A' }}</td>
+                                            <td>
+                                                <form method="POST" action="{{ url_for('main.delete_task', task_id=task.id) }}" class="d-inline" onsubmit="return confirm('Seguro que queres eliminar esta tarefa?');">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-light" role="alert">
+                            Aínda non hai tarefas completadas.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

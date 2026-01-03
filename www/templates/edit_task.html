@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Tarefa - Xestor de Tarefas{% endblock %}
+
+{% block content %}
+    <h2>Editar Tarefa</h2>
+    <form method="POST" action="{{ url_for('main.edit_task', task_id=task_id) }}">
+        <div class="mb-3">
+            <label for="descricion" class="form-label">Descrición da Tarefa:</label>
+            <textarea id="descricion" name="descricion" class="form-control" rows="3" required>{{ task.descricion }}</textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label for="responsable" class="form-label">Responsable:</label>
+            <input type="text" id="responsable" name="responsable" class="form-control" value="{{ task.responsable }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="comision" class="form-label">Comisión, Grupo de Traballo ou Cargo:</label>
+            <input type="text" id="comision" name="comision" class="form-control" value="{{ task.comision }}">
+        </div>
+        
+        <div class="mb-3">
+            <label for="data_entrega" class="form-label">Data Límite:</label>
+            <input type="date" id="data_entrega" name="data_entrega" class="form-control" value="{{ task.data_entrega.strftime('%Y-%m-%d') if task.data_entrega }}">
+        </div>
+        
+        <div class="mb-3">
+            <label for="estado" class="form-label">Estado:</label>
+            <select id="estado" name="estado" class="form-select">
+                <option value="Pendente" {% if task.estado == 'Pendente' %}selected{% endif %}>Pendente</option>
+                <option value="En Progreso" {% if task.estado == 'En Progreso' %}selected{% endif %}>En Progreso</option>
+                <option value="Feito" {% if task.estado == 'Feito' %}selected{% endif %}>Feito</option>
+            </select>
+        </div>
+        
+        <div class="d-flex justify-content-start gap-2">
+            <button type="submit" class="btn btn-primary">Actualizar Tarefa</button>
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+    
+    <form method="POST" action="{{ url_for('main.delete_task', task_id=task_id) }}" onsubmit="return confirm('Tes a certeza de que queres eliminar esta tarefa?');" class="mt-3">
+        <button type="submit" class="btn btn-danger">Eliminar Tarefa</button>
+    </form>
+{% endblock %}
